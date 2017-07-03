@@ -1,0 +1,20 @@
+spring:
+  data:
+    elasticsearch:
+      clusterNodes: localhost:9300
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "roudou.84@gmail.com"
+    password: "*******"
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+monitoring:
+  nbApplications: 6
+  email:
+    subject: "NOBC - Incident d'exploitation"
+    from: "nobc-no-reply@gmail.com"
+    to: "roudou.84@gmail.com"
