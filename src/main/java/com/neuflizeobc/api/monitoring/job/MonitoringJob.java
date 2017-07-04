@@ -22,11 +22,12 @@ public class MonitoringJob {
 
     private MonitoringService monitoringService;
 
-    public MonitoringJob(@Autowired MonitoringService monitoringService) {
+    @Autowired
+    public MonitoringJob(MonitoringService monitoringService) {
         this.monitoringService = monitoringService;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRateString = "${monitoring.jobExecutionEvery}")
     public void reportCurrentTime() {
         LOGGER.info("Exécution du job de monitoring de l'activité des applications");
         Instant start = Instant.now();

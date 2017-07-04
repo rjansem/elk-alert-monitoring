@@ -13,6 +13,9 @@ spring:
           starttls:
             enable: true
 monitoring:
+  # En ms, l'écart entre 2 exécutions du job
+  jobExecutionEvery: 10000
+  # Nombre d'applications à monitorer
   nbApplications: 6
   email:
     subject: "NOBC - Incident d'exploitation"
