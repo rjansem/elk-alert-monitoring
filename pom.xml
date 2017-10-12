@@ -10,6 +10,49 @@
 
     <name>monitoring</name>
     <description>Batch de monitoring de la disponibilité des microservices NOBC</description>
+	
+	<scm>
+        <url>https://h3-integration.gwin.fr.eu.abnamro.com/gitlab/nobc-api/api-monitoring</url>
+        <connection>scm:git:https://h3-integration.gwin.fr.eu.abnamro.com/gitlab/nobc-api/api-monitoring.git</connection>
+        <developerConnection>scm:git:https://h3-integration.gwin.fr.eu.abnamro.com/gitlab/nobc-api/api-monitoring.git</developerConnection>
+    </scm>
+	
+	<repositories>
+        <repository>
+            <id>nobc-public</id>
+            <name>NOBC public libraries</name>
+            <url>https://h3-integration.gwin.fr.eu.abnamro.com/artifactory/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nobc-public</id>
+            <name>NOBC public libraries</name>
+            <url>https://h3-integration.gwin.fr.eu.abnamro.com/artifactory/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>libs-release-local</id>
+            <name>NOBC Releases</name>
+            <url>https://h3-integration.gwin.fr.eu.abnamro.com/artifactory/libs-release-local</url>
+            <layout>maven-2-default</layout>
+        </repository>
+        <snapshotRepository>
+            <id>libs-snapshot-local</id>
+            <name>NOBC Releases</name>
+            <url>https://h3-integration.gwin.fr.eu.abnamro.com/artifactory/libs-snapshot-local</url>
+            <layout>maven-2-default</layout>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,7 +104,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <finalName>${artifactId}</finalName>
+                            <finalName>${project.artifactId}</finalName>
                         </configuration>
                     </execution>
                 </executions>

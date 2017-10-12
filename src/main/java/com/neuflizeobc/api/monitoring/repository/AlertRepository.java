@@ -9,22 +9,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Repository de recherche de documents de type Alerte dans ElasticSearch
+ * Repository de recherche de documents de type Alert dans ElasticSearch
  *
  * @author rjansem
  */
 public interface AlertRepository extends ElasticsearchRepository<AlertDocument, String> {
-
-    /**
-     * Renvoie les 20 derniers documents de type fourni
-     * @return
-     */
-    List<AlertDocument> findByType(String type, Pageable pageable);
-
-    /**
-     * Renvoie les 10 derniers documents
-     * @return
-     */
-    List<AlertDocument> findTop10ByHost(String host);
 
 }

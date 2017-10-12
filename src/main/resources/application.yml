@@ -5,19 +5,47 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: "roudou.84@gmail.com"
-    password: "*******"
+    username: "bouhamyd.mohamed@gmail.com"
+    password: "isswalbrest"
     properties:
       mail:
         smtp:
           starttls:
             enable: true
+logging:
+  path: c:/tmp
+  level:
+    com.neuflizeobc.api.monitoring: DEBUG
 monitoring:
   # En ms, l'écart entre 2 exécutions du job
   jobExecutionEvery: 10000
   # Nombre d'applications à monitorer
   nbApplications: 6
   email:
+    enabled: true
     subject: "NOBC - Incident d'exploitation"
-    from: "nobc-no-reply@gmail.com"
-    to: "roudou.84@gmail.com"
+    from: "bouhamyd.mohamed@gmail.com"
+    to: "bouhamyd.mohamed@gmail.com"
+
+---
+spring:
+  profiles: homo,homo3,rgb,prod
+  mail:
+    host: 206.13.247.134
+    port: 25
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: false
+logging:
+  path: /var/log/nobc-api/monitoring
+  level:
+    com.neuflizeobc.api.monitoring: INFO
+monitoring:
+  email:
+    enabled: true
+    subject: "NOBC - Incident d'exploitation"
+    from: "bouhamyd.mohamed@gmail.com"
+    to: "bouhamyd.mohamed@gmail.com"
+

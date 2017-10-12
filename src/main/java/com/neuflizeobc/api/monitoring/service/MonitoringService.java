@@ -30,7 +30,6 @@ public class MonitoringService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
-    private static final String DOC_TYPE = "alert";
     private static final String TIMESTAMP_FIELD = "@timestamp";
 
     private final AlertRepository alertRepository;
@@ -48,6 +47,9 @@ public class MonitoringService {
     @Value("${monitoring.email.to}")
     private String emailTo;
 
+    @Value("${monitoring.email.enabled}")
+    private Boolean enabled;
+
     @Autowired
     public MonitoringService(AlertRepository alertRepository, JavaMailSender javaMailSender) {
         this.alertRepository = alertRepository;
@@ -60,19 +62,25 @@ public class MonitoringService {
     public void checkServersActivity() {
         // Pour s'assurer de remonter a minima 2 alertes par application.
         int nbAlertsToFetch = nbApplications * 3;
-        Map<String, List<AlertDocument>> alertsByApp = alertRepository.findByType(DOC_TYPE, PageRequest.of(0, nbAlertsToFetch, Sort.Direction.DESC, TIMESTAMP_FIELD))
+        Map<String, List<AlertDocument>> alertsByApp = alertRepository.findAll(PageRequest.of(0, nbAlertsToFetch, Sort.Direction.DESC, TIMESTAMP_FIELD))
                 .stream()
                 .collect(Collectors.groupingBy(AlertDocument::getUrl, LinkedHashMap::new, Collectors.toList()));
         LOGGER.debug("Alertes récupérées depuis ElasticSearch");
 
         alertsByApp.keySet().stream().map(k -> alertsByApp.get(k)).forEach(a -> {
             if (notifyForServerDown(a)) {
+                LOGGER.debug("Envoi d'une alerte DOWN pour le serveur {}", a.get(0).getHost());
                 notify(a, false);
+            } else {
+                LOGGER.debug("Pas d'envoi d'alerte DOWN pour le serveur {}", a.get(0).getHost());
             }
         });
         alertsByApp.keySet().stream().map(k -> alertsByApp.get(k)).forEach(a -> {
             if (notifyForServerUp(a)) {
+                LOGGER.debug("Envoi d'une alerte UP pour le serveur {}", a.get(0).getHost());
                 notify(a, true);
+            } else {
+                LOGGER.debug("Pas d'envoi d'alerte UP pour le serveur {}", a.get(0).getHost());
             }
         });
 
@@ -88,7 +96,8 @@ public class MonitoringService {
         AlertDocument lastAlert = alerts.get(0);
         AlertDocument previousAlert = alerts.get(1);
 
-        return Boolean.FALSE.equals(lastAlert.getUp()) && Boolean.TRUE.equals(previousAlert.getUp());
+        //return Boolean.FALSE.equals(lastAlert.getUp()) && Boolean.TRUE.equals(previousAlert.getUp());
+        return Boolean.FALSE.equals(lastAlert.getUp()) ;
     }
 
     /**
@@ -101,7 +110,8 @@ public class MonitoringService {
         AlertDocument lastAlert = alerts.get(0);
         AlertDocument previousAlert = alerts.get(1);
 
-        return Boolean.TRUE.equals(lastAlert.getUp()) && Boolean.FALSE.equals(previousAlert.getUp());
+        //return Boolean.TRUE.equals(lastAlert.getUp()) && Boolean.FALSE.equals(previousAlert.getUp());
+        return Boolean.TRUE.equals(lastAlert.getUp());
     }
 
     /**
@@ -126,16 +136,21 @@ public class MonitoringService {
      * @param message
      */
     private void sendMail(String message) {
-        LOGGER.info("Envoi de l'email : {}", message);
+        LOGGER.warn("Envoi de l'email : {}", message);
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom(emailFrom);
             messageHelper.setTo(emailTo);
             messageHelper.setSubject(emailSubject);
             messageHelper.setText(message);
+            LOGGER.info("le mail a été envoyé à l'adresse {}", emailTo);
         };
         try {
-            javaMailSender.send(messagePreparator);
+            if (Boolean.TRUE.equals(this.enabled)) {
+                javaMailSender.send(messagePreparator);
+            } else {
+                LOGGER.warn("Envoi d'email désactivé");
+            }
         } catch (MailException e) {
             throw new RuntimeException("Erreur lors de l'envoi du mail", e);
         }

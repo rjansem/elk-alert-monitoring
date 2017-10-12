@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
  *
  * @author rjansem
  */
-@Document(indexName = "monitoring", type = "log")
+@Document(indexName = "monitoring", type = "alert")
 public class AlertDocument {
 
     @Id
